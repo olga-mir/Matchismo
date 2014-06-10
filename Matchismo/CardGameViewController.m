@@ -7,23 +7,63 @@
 //
 
 #import "CardGameViewController.h"
+#import "CardMatchingGame.h"
+#import "PlayingCardDeck.h"
 
 @interface CardGameViewController ()
+@property (nonatomic, strong) CardMatchingGame *game;
+@property (strong, nonatomic) IBOutletCollection(UIButton) NSArray *cardButtons;
+@property (weak, nonatomic) IBOutlet UILabel *scoreLabel;
 
 @end
 
+
 @implementation CardGameViewController
 
-- (void)viewDidLoad
+- (CardMatchingGame *)game
 {
-    [super viewDidLoad];
-	// Do any additional setup after loading the view, typically from a nib.
+  if (!_game) _game = [[CardMatchingGame alloc] initWithCardCount:[self.cardButtons count]
+                                                        usingDeck:[self createDeck]];
+  return _game;
 }
 
-- (void)didReceiveMemoryWarning
+-(Deck *)createDeck
 {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+  return [[PlayingCardDeck alloc] init];
 }
+
+
+- (IBAction)touchCardButton:(id)sender
+{
+  int chosenCardButtonIndex = [self.cardButtons indexOfObject:sender];
+  [self.game choseCardAtIndex:chosenCardButtonIndex];
+  [self updateUI];
+}
+
+- (void) updateUI
+{
+  for (UIButton *cardButton in self.cardButtons) {
+    int cardButtonIndex = [self.cardButtons indexOfObject:cardButton];
+    Card *card = [self.game cardAtIndex:cardButtonIndex];
+    [cardButton setTitle:[self titleForCard:card] forState:UIControlStateNormal];
+    [cardButton setBackgroundImage:[self backgroundImageForCard:card] forState:UIControlStateNormal];
+    cardButton.enabled = !card.isMatched;
+    self.scoreLabel.text = [NSString stringWithFormat:@"Score: %d", self.game.score];
+  }
+}
+
+- (NSString *)titleForCard:(Card *)card
+{
+  return card.isChosen ? card.contents : @"";
+}
+
+- (UIImage *)backgroundImageForCard:(Card *)card
+{
+  return [UIImage imageNamed:card.isChosen ? @"cardfront" : @"cardback"];
+}
+
+
+
+
 
 @end
