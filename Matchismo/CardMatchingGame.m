@@ -7,13 +7,11 @@
 //
 
 #import "CardMatchingGame.h"
-#import "PlayingCardDeck.h"
 
 
 @interface CardMatchingGame()
 
 @property (nonatomic, readwrite) NSInteger score;
-@property (nonatomic, strong) PlayingCardDeck *deck;
 @property (nonatomic, strong) NSMutableArray *cards; // of Cards
 
 @end
@@ -27,30 +25,45 @@
   return _cards;
 }
 
-- (Deck *)deck
+// auxilary function used to fill the _cards array from the given deck
+// used in initializer and re-deal operation.
+- (BOOL)dealCards:(NSUInteger)count fromDeck:(Deck *)deck
 {
-  if (!_deck) _deck = [[PlayingCardDeck alloc] init];
-  return _deck;
+  for (int i = 0; i < count ; i++) {
+    Card *card = [deck drawRandomCard];
+    if (card) {
+      [self.cards addObject:card];
+    } else { // there was not enough cards in the deck
+      return NO;
+    }
+  }
+  return YES; // successfully dealt the cards
 }
 
+// The class designated inittializer
 - (instancetype)initWithCardCount:(NSUInteger)count usingDeck:(Deck *)deck
 {
   self = [super init];
   
   if (self) {
-    for (int i = 0; i < count ; i++) {
-      Card *card = [deck drawRandomCard];
-      if (card) {
-        [self.cards addObject:card];
-      } else { // there was not enough cards in the deck
-        self = nil;
-        break;
-      }
+    if (![self dealCards:count fromDeck:deck]) {
+      // there was not enough cards, so the deal failed
+      self = nil;
     }
   }
+  
   return self;
 }
 
+// reset the game logic. The number of cards is defined only once in the beggining of the game
+// i.e. it is set once in the CardMatchingGame initializer
+-(void)restartGameUsingDeck:(Deck *)deck
+{
+  int cardsInGame = [self.cards count];
+  [self.cards removeAllObjects];
+  [self dealCards:cardsInGame fromDeck:deck];
+  self.score = 0;
+}
 
 
 - (Card *)cardAtIndex:(NSUInteger)index

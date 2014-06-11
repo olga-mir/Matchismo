@@ -15,6 +15,9 @@
 // designated initializer
 - (instancetype)initWithCardCount:(NSUInteger)count usingDeck:(Deck *)deck;
 
+// purge the current cards and deal new set
+- (void)restartGameUsingDeck:(Deck *)deck;
+
 - (void)choseCardAtIndex:(NSUInteger)index;
 - (Card *)cardAtIndex:(NSUInteger)index;
 
