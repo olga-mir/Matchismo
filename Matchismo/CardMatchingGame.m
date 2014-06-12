@@ -65,6 +65,10 @@
   self.score = 0;
 }
 
+- (void)setNumOfCardsToMatch:(NSUInteger)num
+{
+  self.numOfCardsToMatch = num;
+}
 
 - (Card *)cardAtIndex:(NSUInteger)index
 {
@@ -84,20 +88,42 @@ static const int COST_TO_CHOSE = 1;
     // if the user clicked on a card that was previously chosen (face up), this
     // card now should flip over to face down, unchosen state
     card.chosen = NO;
+    
   } else {
-    // match the current card against other cards
+
+    NSMutableArray *cardsToMatch = [[NSMutableArray alloc] init];
+    
+    // first we need to find all the cards that are face up, but has not yet been withdrawn from game
+    // by being matched to other cards.
     for (Card *otherCard in self.cards) {
       if (otherCard.isChosen && !otherCard.isMatched) {
-        int matchScore = [card match:@[otherCard]];
-        if (matchScore) {
-          self.score += matchScore * MATCH_BONUS;
-          otherCard.matched = YES;
-          card.matched = YES;
+        
+        [cardsToMatch addObject:otherCard];
+        
+        // only when exact number of cards to current game mode is chosen we can match them
+        if ([cardsToMatch count] + 1 == self.numOfCardsToMatch) {
+          int matchScore = [card match:cardsToMatch];
+          
+          if (matchScore) {
+            self.score += matchScore * MATCH_BONUS;
+            for (Card *c in cardsToMatch) {
+              c.matched = YES;
+            }
+            card.matched = YES;
+            
+          } else { // the cards didn't match in any way - return them all to the game.
+            
+            self.score -= MISMATCH_PENALTY;
+            for (Card *c in cardsToMatch) {
+              c.chosen = NO;
+            }
+          }
+
+          
         } else {
-          self.score -= MISMATCH_PENALTY;
-          otherCard.chosen = NO;
+          // there is currently not enough cards selected
+          // there is nothing to do in this case, only wait until user selects additional cards
         }
-        break; // only for 2 cards now
       }
     }
     self.score -= COST_TO_CHOSE;
@@ -106,3 +132,26 @@ static const int COST_TO_CHOSE = 1;
 }
 
 @end
+
+
+
+//} else {
+//  // match the current card against other cards
+//  for (Card *otherCard in self.cards) {
+//    if (otherCard.isChosen && !otherCard.isMatched) {
+//      int matchScore = [card match:@[otherCard]];
+//      if (matchScore) {
+//        self.score += matchScore * MATCH_BONUS;
+//        otherCard.matched = YES;
+//        card.matched = YES;
+//      } else {
+//        self.score -= MISMATCH_PENALTY;
+//        otherCard.chosen = NO;
+//      }
+//      break; // only for 2 cards now
+//    }
+//  }
+//  self.score -= COST_TO_CHOSE;
+//  card.chosen = YES;
+//}
+

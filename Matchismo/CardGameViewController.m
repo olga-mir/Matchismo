@@ -12,14 +12,42 @@
 
 @interface CardGameViewController ()
 @property (nonatomic, strong) CardMatchingGame *game;
+
+// game is not in progress after the cards had been successfully dealt and before the first flip occurs
+@property (nonatomic) BOOL gameInProgress;
+
 @property (strong, nonatomic) IBOutletCollection(UIButton) NSArray *cardButtons;
 @property (weak, nonatomic) IBOutlet UILabel *scoreLabel;
 @property (weak, nonatomic) IBOutlet UIButton *dealButton;
+@property (weak, nonatomic) IBOutlet UISegmentedControl *numOfCardsModeSwitch;
 
 @end
 
 
 @implementation CardGameViewController
+
+
++ (NSArray *)indexToNumOfCardsLookupArray
+{
+  static NSArray *theArray;
+  if (!theArray)
+  {
+    theArray = [[NSArray alloc] initWithObjects:[NSNumber numberWithInt:2],
+                                                [NSNumber numberWithInt:3],
+                                                nil];
+  }
+  return theArray;
+}
+
+
+- (instancetype)init
+{
+    self = [super init];
+    if (self) {
+      self.gameInProgress = NO;
+    }
+    return self;
+}
 
 - (CardMatchingGame *)game
 {
@@ -33,11 +61,26 @@
   return [[PlayingCardDeck alloc] init];
 }
 
+- (IBAction)touchNumOfCardsSwitch:(id)sender
+{
+  int segmentInd = self.numOfCardsModeSwitch.selectedSegmentIndex;
+  
+  if ( segmentInd != UISegmentedControlNoSegment){
+    // index 0: 2 cards to match, index 1: 3 cards to match
+    NSNumber *numCardsToMatch = [[CardGameViewController indexToNumOfCardsLookupArray] objectAtIndex:segmentInd];
+    NSLog(@"Cards to match: %@", numCardsToMatch);
+    NSUInteger num = (NSUInteger)[numCardsToMatch intValue];
+    NSLog(@"num to match: %d", num);
+    [self.game setNumOfCardsToMatch:num];
+  }
+}
+
 // at this stage the deal button doesn't prompt the user if he does intend to drop current game
 - (IBAction)touchDealButton:(id)sender
 {
   NSLog(@"---------------- DEAL -------------------");
   [self.game restartGameUsingDeck:[self createDeck]];
+  self.gameInProgress = NO;
   [self updateUI];
 }
 
@@ -48,6 +91,7 @@
   int chosenCardButtonIndex = [self.cardButtons indexOfObject:sender];
   NSLog(@"touched card button. index: %d", chosenCardButtonIndex);
   [self.game choseCardAtIndex:chosenCardButtonIndex];
+  self.gameInProgress = YES;
   [self updateUI];
 }
 
@@ -62,6 +106,7 @@
     [cardButton setTitle:[self titleForCard:card] forState:UIControlStateNormal];
     [cardButton setBackgroundImage:[self backgroundImageForCard:card] forState:UIControlStateNormal];
     cardButton.enabled = !card.isMatched;
+    self.numOfCardsModeSwitch.enabled = !self.gameInProgress;
     self.scoreLabel.text = [NSString stringWithFormat:@"Score: %d", self.game.score];
   }
 }

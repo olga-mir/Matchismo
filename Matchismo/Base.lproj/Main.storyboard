@@ -156,7 +156,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xkL-2l-XsD">
-                                <rect key="frame" x="20" y="385" width="31" height="30"/>
+                                <rect key="frame" x="20" y="394" width="31" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="Deal">
                                     <color key="titleColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
@@ -166,11 +166,23 @@
                                     <action selector="touchDealButton:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="w13-0x-Ssx"/>
                                 </connections>
                             </button>
+                            <segmentedControl opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="5XB-Qo-Uqm">
+                                <rect key="frame" x="20" y="349" width="280" height="29"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <segments>
+                                    <segment title="2 Cards Mode"/>
+                                    <segment title="3 Cards Mode"/>
+                                </segments>
+                                <connections>
+                                    <action selector="touchNumOfCardsSwitch:" destination="vXZ-lx-hvc" eventType="valueChanged" id="40x-0t-W2T"/>
+                                </connections>
+                            </segmentedControl>
                         </subviews>
                         <color key="backgroundColor" red="0.0" green="0.50196081399917603" blue="0.25098040699958801" alpha="1" colorSpace="calibratedRGB"/>
                     </view>
                     <connections>
                         <outlet property="dealButton" destination="xkL-2l-XsD" id="XhG-pn-K31"/>
+                        <outlet property="numOfCardsModeSwitch" destination="5XB-Qo-Uqm" id="Q65-EV-rpK"/>
                         <outlet property="scoreLabel" destination="moS-52-SZb" id="lWq-dD-Aia"/>
                         <outletCollection property="cardButtons" destination="EYF-YP-xo9" id="5YD-MX-bpA"/>
                         <outletCollection property="cardButtons" destination="SJM-qZ-Nuc" id="Lhn-qK-6Yl"/>
@@ -194,6 +206,7 @@
     <resources>
         <image name="cardback" width="64" height="96"/>
     </resources>
+    <color key="tintColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar"/>
         <simulatedOrientationMetrics key="orientation"/>
