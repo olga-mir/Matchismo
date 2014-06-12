@@ -50,6 +50,8 @@
       // there was not enough cards, so the deal failed
       self = nil;
     }
+    
+    self.numOfCardsToMatch = 2; // TODO - replace
   }
   
   return self;
@@ -65,10 +67,6 @@
   self.score = 0;
 }
 
-- (void)setNumOfCardsToMatch:(NSUInteger)num
-{
-  self.numOfCardsToMatch = num;
-}
 
 - (Card *)cardAtIndex:(NSUInteger)index
 {
@@ -102,6 +100,7 @@ static const int COST_TO_CHOSE = 1;
         
         // only when exact number of cards to current game mode is chosen we can match them
         if ([cardsToMatch count] + 1 == self.numOfCardsToMatch) {
+  
           int matchScore = [card match:cardsToMatch];
           
           if (matchScore) {

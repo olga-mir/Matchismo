@@ -27,19 +27,6 @@
 @implementation CardGameViewController
 
 
-+ (NSArray *)indexToNumOfCardsLookupArray
-{
-  static NSArray *theArray;
-  if (!theArray)
-  {
-    theArray = [[NSArray alloc] initWithObjects:[NSNumber numberWithInt:2],
-                                                [NSNumber numberWithInt:3],
-                                                nil];
-  }
-  return theArray;
-}
-
-
 - (instancetype)init
 {
     self = [super init];
@@ -61,24 +48,25 @@
   return [[PlayingCardDeck alloc] init];
 }
 
-- (IBAction)touchNumOfCardsSwitch:(id)sender
+- (IBAction)touchNumOfCardsSwitch:(UISegmentedControl *)sender
 {
-  int segmentInd = self.numOfCardsModeSwitch.selectedSegmentIndex;
-  
-  if ( segmentInd != UISegmentedControlNoSegment){
-    // index 0: 2 cards to match, index 1: 3 cards to match
-    NSNumber *numCardsToMatch = [[CardGameViewController indexToNumOfCardsLookupArray] objectAtIndex:segmentInd];
-    NSLog(@"Cards to match: %@", numCardsToMatch);
-    NSUInteger num = (NSUInteger)[numCardsToMatch intValue];
-    NSLog(@"num to match: %d", num);
-    [self.game setNumOfCardsToMatch:num];
+  switch ([sender selectedSegmentIndex]) {
+    case 0:
+      self.game.numOfCardsToMatch = 2;
+      break;
+    case 1:
+      self.game.numOfCardsToMatch = 3;
+      break;
+    default:
+      self.game.numOfCardsToMatch = 2;
+      break;
   }
 }
 
 // at this stage the deal button doesn't prompt the user if he does intend to drop current game
 - (IBAction)touchDealButton:(id)sender
 {
-  NSLog(@"---------------- DEAL -------------------");
+  NSLog(@"DEAL");
   [self.game restartGameUsingDeck:[self createDeck]];
   self.gameInProgress = NO;
   [self updateUI];
@@ -97,12 +85,9 @@
 
 - (void) updateUI
 {
-  NSLog(@"UpdateUI, cards count: %d", [self.cardButtons count]);
-  
   for (UIButton *cardButton in self.cardButtons) {
     int cardButtonIndex = [self.cardButtons indexOfObject:cardButton];
     Card *card = [self.game cardAtIndex:cardButtonIndex];
-    NSLog(@"currentInd: %d, card.chosen: %d, card.matched: %d", cardButtonIndex, card.isChosen, card.isMatched);
     [cardButton setTitle:[self titleForCard:card] forState:UIControlStateNormal];
     [cardButton setBackgroundImage:[self backgroundImageForCard:card] forState:UIControlStateNormal];
     cardButton.enabled = !card.isMatched;

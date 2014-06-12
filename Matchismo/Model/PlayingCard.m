@@ -46,21 +46,70 @@
   }
 }
 
+#define RANK_MATCH_SCORE 4
+#define SUIT_MATCH_SCORE 2
+
 - (int)match:(NSArray *)otherCards {
   
   int score = 0;
+  int rankMatches = 0;
+  int suitMatches = 0;
   
-  if ([otherCards count] == 1) {
-    PlayingCard *otherCard = [otherCards firstObject];
+  PlayingCard *currentCard = self;
+  NSMutableArray *otherCardsMutableArr = [otherCards mutableCopy];
+  
+  
+  // We have a card and an array of other cards to match this card to
+  // Once we've matched the current card to all the cards in otherCards array
+  // we need to continue look for matches between the cards in otherCards array
+  while ([otherCardsMutableArr count] >= 1) {
     
-    if (otherCard.rank == self.rank) {
-      score = 4;
-    } else if ([otherCard.suit isEqualToString:self.suit]) {
-      score = 1;
+    for (PlayingCard *otherCard in otherCardsMutableArr) {
+      
+      if (otherCard.rank == currentCard.rank) {
+        rankMatches++;
+      } else if ([otherCard.suit isEqualToString:currentCard.suit]) {
+        suitMatches++;
+      }
     }
+    
+    // now take one card from the 'other' array and try to mathc it to its recent peers.
+    currentCard = [otherCardsMutableArr lastObject]; // there is no order preference
+    [otherCardsMutableArr removeLastObject];
   }
+
+  score += RANK_MATCH_SCORE * rankMatches;
+  score += SUIT_MATCH_SCORE * suitMatches;
+  
+  NSMutableString *cs = [[NSMutableString alloc]init];
+  [cs appendString:self.contents];
+  for (Card *c in otherCards) {
+    [cs appendString:c.contents];
+  }
+  NSLog(@"matched %@ for score %d", cs, score);
+
+  
   return score;
 }
+
+
+// below is the code used to match only 2 cards
+
+//- (int)match:(NSArray *)otherCards {
+//  
+//  int score = 0;
+//  
+//  if ([otherCards count] == 1) {
+//    PlayingCard *otherCard = [otherCards firstObject];
+//    
+//    if (otherCard.rank == self.rank) {
+//      score = 4;
+//    } else if ([otherCard.suit isEqualToString:self.suit]) {
+//      score = 1;
+//    }
+//  }
+//  return score;
+//}
 
 
 
