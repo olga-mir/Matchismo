@@ -12,7 +12,14 @@
 
 @interface CardMatchingGame : NSObject
 
+// the card game mode - match 2 or 3 cards at a time.
 @property (nonatomic) NSUInteger numOfCardsToMatch;
+
+// keep the last chosen cardset and the score for the last match for the ViewController needs.
+// since this information is not avaibale and not restoreable in the view controller it is built in the model
+// it is also UI independent, so there is no problem to save it in the model
+@property (nonatomic, strong) NSMutableArray *lastChosenCards; // of Cards
+@property (nonatomic) int scoreForLastMatch;
 
 // designated initializer
 - (instancetype)initWithCardCount:(NSUInteger)count usingDeck:(Deck *)deck;

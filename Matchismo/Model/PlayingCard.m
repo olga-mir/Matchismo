@@ -78,9 +78,10 @@
     [otherCardsMutableArr removeLastObject];
   }
 
-  score += RANK_MATCH_SCORE * rankMatches;
-  score += SUIT_MATCH_SCORE * suitMatches;
+  score += rankMatches * RANK_MATCH_SCORE;
+  score += suitMatches * SUIT_MATCH_SCORE;
   
+  // debug code
   NSMutableString *cs = [[NSMutableString alloc]init];
   [cs appendString:self.contents];
   for (Card *c in otherCards) {
@@ -91,26 +92,6 @@
   
   return score;
 }
-
-
-// below is the code used to match only 2 cards
-
-//- (int)match:(NSArray *)otherCards {
-//  
-//  int score = 0;
-//  
-//  if ([otherCards count] == 1) {
-//    PlayingCard *otherCard = [otherCards firstObject];
-//    
-//    if (otherCard.rank == self.rank) {
-//      score = 4;
-//    } else if ([otherCard.suit isEqualToString:self.suit]) {
-//      score = 1;
-//    }
-//  }
-//  return score;
-//}
-
 
 
 @end

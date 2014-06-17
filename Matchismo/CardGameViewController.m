@@ -20,6 +20,7 @@
 @property (weak, nonatomic) IBOutlet UILabel *scoreLabel;
 @property (weak, nonatomic) IBOutlet UIButton *dealButton;
 @property (weak, nonatomic) IBOutlet UISegmentedControl *numOfCardsModeSwitch;
+@property (weak, nonatomic) IBOutlet UILabel *messageLabel;
 
 @end
 
@@ -73,7 +74,6 @@
 }
 
 
-
 - (IBAction)touchCardButton:(id)sender
 {
   int chosenCardButtonIndex = [self.cardButtons indexOfObject:sender];
@@ -82,6 +82,7 @@
   self.gameInProgress = YES;
   [self updateUI];
 }
+
 
 - (void) updateUI
 {
@@ -93,6 +94,25 @@
     cardButton.enabled = !card.isMatched;
     self.numOfCardsModeSwitch.enabled = !self.gameInProgress;
     self.scoreLabel.text = [NSString stringWithFormat:@"Score: %d", self.game.score];
+
+    // message to the user.
+    NSMutableArray *cardsInCurMatch = [[NSMutableArray alloc] init]; // of NSStrings, representing contents of the card in current macth
+    for (Card *card in self.game.lastChosenCards) {
+      [cardsInCurMatch addObject:card.contents];
+    }
+    NSString *cardsContents = [cardsInCurMatch componentsJoinedByString:@" "];
+
+    if ([self.game.lastChosenCards count] == 0) {
+      self.messageLabel.text = @"";
+    } else if ([self.game.lastChosenCards count] == self.game.numOfCardsToMatch) {
+      if (self.game.scoreForLastMatch > 0) {
+        self.messageLabel.text = [NSString stringWithFormat:@"%@ matched for %d", cardsContents, self.game.scoreForLastMatch];
+      } else {
+        self.messageLabel.text = [NSString stringWithFormat:@"%@ didn't match. %d penalty", cardsContents, self.game.scoreForLastMatch];
+      }
+    } else {
+      self.messageLabel.text = [NSString stringWithFormat:@"%@. Keep chosing", cardsContents];
+    }
   }
 }
 
@@ -108,6 +128,8 @@
 
 
 
-
-
 @end
+
+
+
+
