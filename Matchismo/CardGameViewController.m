@@ -77,7 +77,6 @@
 - (IBAction)touchCardButton:(id)sender
 {
   int chosenCardButtonIndex = [self.cardButtons indexOfObject:sender];
-  NSLog(@"touched card button. index: %d", chosenCardButtonIndex);
   [self.game choseCardAtIndex:chosenCardButtonIndex];
   self.gameInProgress = YES;
   [self updateUI];
